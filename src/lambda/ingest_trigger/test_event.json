@@ -1,0 +1,32 @@
+{
+  "Records": [
+    {
+      "messageId": "00000000-0000-0000-0000-000000000001",
+      "receiptHandle": "test",
+      "body": "{\"Records\": [{\"eventVersion\": \"2.1\", \"eventSource\": \"aws:s3\", \"awsRegion\": \"ap-south-1\", \"eventTime\": \"2026-10-20T12:00:00.000Z\", \"eventName\": \"ObjectCreated:Put\", \"s3\": {\"bucket\": {\"name\": \"producer-aws-<ACCOUNT_A_ID>-ap-south-1-an\", \"arn\": \"arn:aws:s3:::producer-aws-<ACCOUNT_A_ID>-ap-south-1-an\"}, \"object\": {\"key\": \"raw/source%3Dsynthetic/date%3D2026-10-14/20261014T060000-001.json\", \"size\": 1028169, \"versionId\": \"O718Q9xjaNIr2xuOUJtPmEyz_m_Vi78W\"}}}]}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1792497600000"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "test",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:ap-south-1:<ACCOUNT_B_ID>:platform-ingest-queue",
+      "awsRegion": "ap-south-1"
+    },
+    {
+      "messageId": "00000000-0000-0000-0000-000000000002",
+      "receiptHandle": "test",
+      "body": "this is not json",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1792497600000"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "test",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:ap-south-1:<ACCOUNT_B_ID>:platform-ingest-queue",
+      "awsRegion": "ap-south-1"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# Keep Unix line endings in the repo and working copy (scripts run on Linux in AWS)
+* text=auto eol=lf

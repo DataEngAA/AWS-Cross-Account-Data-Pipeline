@@ -1,0 +1,29 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+
+# Secrets and local config
+.env
+*.pem
+*credentials*
+.aws/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS and editor
+.DS_Store
+.idea/
+.vscode/
+
+# Generated test data
+data/
+
+# Real account IDs and user names (placeholders are filled by scripts/render.py)
+local/accounts.env
+build/

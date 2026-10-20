@@ -1,0 +1,31 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PlatformGlueListRaw",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<ACCOUNT_B_ID>:role/platform-glue-etl-role"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::producer-aws-<ACCOUNT_A_ID>-ap-south-1-an",
+            "Condition": {
+                "StringLike": {
+                    "s3:prefix": [
+                        "raw",
+                        "raw/*"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "PlatformGlueReadRaw",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<ACCOUNT_B_ID>:role/platform-glue-etl-role"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::producer-aws-<ACCOUNT_A_ID>-ap-south-1-an/raw/*"
+        }
+    ]
+}

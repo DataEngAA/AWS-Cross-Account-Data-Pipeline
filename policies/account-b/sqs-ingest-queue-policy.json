@@ -1,0 +1,32 @@
+{
+    "Version": "2012-10-17",
+    "Id": "__default_policy_ID",
+    "Statement": [
+        {
+            "Sid": "__owner_statement",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<ACCOUNT_B_ID>:root"
+            },
+            "Action": "SQS:*",
+            "Resource": "arn:aws:sqs:ap-south-1:<ACCOUNT_B_ID>:platform-ingest-queue"
+        },
+        {
+            "Sid": "AllowRawBucketInAccountA",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "s3.amazonaws.com"
+            },
+            "Action": "sqs:SendMessage",
+            "Resource": "arn:aws:sqs:ap-south-1:<ACCOUNT_B_ID>:platform-ingest-queue",
+            "Condition": {
+                "ArnEquals": {
+                    "aws:SourceArn": "arn:aws:s3:::producer-aws-<ACCOUNT_A_ID>-ap-south-1-an"
+                },
+                "StringEquals": {
+                    "aws:SourceAccount": "<ACCOUNT_A_ID>"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,120 @@
+{
+  "Comment": "Process one raw file from Account A: ETL with data quality, refresh Athena partitions, record the status in Account A, alert on failure.",
+  "StartAt": "RunEtl",
+  "States": {
+    "RunEtl": {
+      "Type": "Task",
+      "Comment": "Run the ETL + data quality job on this one file and wait for it to finish.",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "platform-etl-products",
+        "Arguments": {
+          "--input_path.$": "States.Format('s3://{}/{}', $.bucket, $.key)"
+        }
+      },
+      "ResultSelector": {
+        "glue_run_id.$": "$.Id",
+        "seconds.$": "$.ExecutionTime"
+      },
+      "ResultPath": "$.etl",
+      "Retry": [
+        {
+          "ErrorEquals": ["Glue.ConcurrentRunsExceededException", "Glue.ThrottlingException", "Glue.InternalServiceException"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "ResultPath": "$.error", "Next": "MarkFailed" }
+      ],
+      "Next": "RefreshPartitions"
+    },
+    "RefreshPartitions": {
+      "Type": "Task",
+      "Comment": "Register any new date/category folders so Athena can query them.",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Parameters": {
+        "QueryString": "MSCK REPAIR TABLE products",
+        "QueryExecutionContext": { "Database": "platform_curated" },
+        "WorkGroup": "platform-analytics"
+      },
+      "ResultPath": null,
+      "Retry": [
+        { "ErrorEquals": ["States.ALL"], "IntervalSeconds": 10, "MaxAttempts": 2, "BackoffRate": 2 }
+      ],
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "ResultPath": "$.error", "Next": "MarkFailed" }
+      ],
+      "Next": "MarkProcessed"
+    },
+    "MarkProcessed": {
+      "Type": "Task",
+      "Comment": "Set the file's row in Account A to PROCESSED, using the role in A.",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Credentials": { "RoleArn": "arn:aws:iam::<ACCOUNT_A_ID>:role/producer-state-writer" },
+      "Parameters": {
+        "TableName": "arn:aws:dynamodb:ap-south-1:<ACCOUNT_A_ID>:table/scrape_state",
+        "Key": { "file_key": { "S.$": "$.key" } },
+        "UpdateExpression": "SET #s = :s, run_id = :r, glue_run_id = :g, processed_at = :t REMOVE error_message",
+        "ConditionExpression": "attribute_exists(file_key)",
+        "ExpressionAttributeNames": { "#s": "status" },
+        "ExpressionAttributeValues": {
+          ":s": { "S": "PROCESSED" },
+          ":r": { "S.$": "$$.Execution.Name" },
+          ":g": { "S.$": "$.etl.glue_run_id" },
+          ":t": { "S.$": "$$.State.EnteredTime" }
+        }
+      },
+      "ResultPath": null,
+      "Retry": [
+        { "ErrorEquals": ["DynamoDB.InternalServerErrorException", "DynamoDB.ThrottlingException"], "IntervalSeconds": 5, "MaxAttempts": 3, "BackoffRate": 2 }
+      ],
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "ResultPath": "$.error", "Next": "NotifyFailure" }
+      ],
+      "End": true
+    },
+    "MarkFailed": {
+      "Type": "Task",
+      "Comment": "Set the file's row in Account A to FAILED with the error name.",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Credentials": { "RoleArn": "arn:aws:iam::<ACCOUNT_A_ID>:role/producer-state-writer" },
+      "Parameters": {
+        "TableName": "arn:aws:dynamodb:ap-south-1:<ACCOUNT_A_ID>:table/scrape_state",
+        "Key": { "file_key": { "S.$": "$.key" } },
+        "UpdateExpression": "SET #s = :s, run_id = :r, error_message = :e, processed_at = :t",
+        "ConditionExpression": "attribute_exists(file_key)",
+        "ExpressionAttributeNames": { "#s": "status" },
+        "ExpressionAttributeValues": {
+          ":s": { "S": "FAILED" },
+          ":r": { "S.$": "$$.Execution.Name" },
+          ":e": { "S.$": "$.error.Error" },
+          ":t": { "S.$": "$$.State.EnteredTime" }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "ResultPath": "$.mark_failed_error", "Next": "NotifyFailure" }
+      ],
+      "Next": "NotifyFailure"
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Comment": "Email the failure through the platform-alerts topic.",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:ap-south-1:<ACCOUNT_B_ID>:platform-alerts",
+        "Subject": "Pipeline run failed",
+        "Message.$": "States.Format('File: s3://{}/{} | Execution: {} | Error: {} | Cause: {}', $.bucket, $.key, $$.Execution.Name, $.error.Error, $.error.Cause)"
+      },
+      "ResultPath": null,
+      "Next": "Failed"
+    },
+    "Failed": {
+      "Type": "Fail",
+      "Error": "PipelineFailed",
+      "Cause": "See the execution's error details and the SNS alert."
+    }
+  }
+}
