@@ -27,3 +27,6 @@ data/
 # Real account IDs and user names (placeholders are filled by scripts/render.py)
 local/accounts.env
 build/
+
+# Terraform backend settings (contain the account ID)
+backend.hcl

@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars (ignored by Git) and fill in.
+account_a_id = "111111111111"
+alert_email  = "you@example.com"
+enable_rds   = false

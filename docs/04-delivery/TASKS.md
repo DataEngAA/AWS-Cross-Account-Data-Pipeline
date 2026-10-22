@@ -55,12 +55,17 @@ Legend: `[ ]` to do, `[x]` done. Update as you go.
 - [x] CloudWatch alarm: DLQ not empty -> `platform-alerts` (`platform-dlq-not-empty`, fired on a leftover test message, back to OK after it was deleted)
 - [ ] Run failure scenarios F-01 to F-05: F-02 done (corrupt file -> FAILED + email), DQ-08 done (42.5% bad -> FAILED + email, nothing in curated), F-05 effectively done (removed principal gets AccessDenied); F-01 and F-04 still to run, F-03 needs an RDS session
 
-## Chunk 7: finish
-- [ ] EC2 scraper in a private subnet reaching a public practice site
-- [ ] Terraform for both accounts
-- [ ] Secret scan and Access Analyzer check
-- [ ] README with diagrams and cost note
-- [ ] Final destroy and apply test
+## Chunk 7: finish (plan in ADR-005)
+- [x] ~~EC2 scraper in a private subnet reaching a public practice site~~ dropped (ADR-005): synthetic data now, real APIs later
+- [x] 7a: Terraform warm-up (throwaway bucket: init, plan, apply, change, drift, destroy)
+- [x] 7a: `terraform/bootstrap` applied: state bucket `tfstate-<ACCOUNT_B_ID>-ap-south-1` (versioned, encrypted, TLS-only, prevent_destroy)
+- [x] 7a: `terraform/account-b` written and planned (45 resources; 52 with `enable_rds = true`); not applied yet because the console-built resources still exist
+- [ ] 7b: `terraform/account-a` (raw bucket + policy + event, `scrape_state`, `producer-state-writer`)
+- [ ] 7b: delete console-built resources (A first, then B), apply account-b, then account-a; confirm the SNS email
+- [ ] 7b: import the DynamoDB table as an exercise
+- [ ] 7b: e2e script `tests/e2e/run_e2e.py`, then destroy and apply both (AC-08)
+- [ ] 7c: secret scan (gitleaks), IaC scan (checkov), IAM Access Analyzer
+- [ ] 7c: retire `policies/` and `scripts/render.py`; README with diagrams and cost note; make the repo public
 
 ## Later: scale test
 - [ ] Add a `--preset large` to the generator: ~22M records, JSON Lines, ~100 files of ~45 MB, 30 days, optional `--gzip` (~4.5-5 GB plain)
