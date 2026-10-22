@@ -17,6 +17,8 @@ data "archive_file" "ingest_trigger" {
 
 # Created by Terraform (not by Lambda on first run) so the retention can be set.
 resource "aws_cloudwatch_log_group" "ingest_trigger" {
+  #checkov:skip=CKV_AWS_158:Logs hold file names only; encrypted with the CloudWatch default key
+  #checkov:skip=CKV_AWS_338:14-day retention on purpose, to limit cost
   name              = "/aws/lambda/${local.lambda_name}"
   retention_in_days = 14
 }
@@ -66,6 +68,12 @@ resource "aws_iam_role_policy" "ingest_trigger" {
 
 # --- Function ----------------------------------------------------------------------
 resource "aws_lambda_function" "ingest_trigger" {
+  #checkov:skip=CKV_AWS_116:Invoked by SQS (not asynchronously); failed messages go to the queue's DLQ
+  #checkov:skip=CKV_AWS_117:Reaches only public AWS APIs (Step Functions); a VPC would need another paid endpoint for no gain
+  #checkov:skip=CKV_AWS_115:Concurrency is capped at 2 by the SQS trigger's maximum_concurrency
+  #checkov:skip=CKV_AWS_173:Environment holds only the state machine ARN, encrypted with the AWS-managed key
+  #checkov:skip=CKV_AWS_272:Single deployer; code reaches Lambda only through Terraform
+  #checkov:skip=CKV_AWS_50:X-Ray tracing is a planned follow-up
   function_name    = local.lambda_name
   role             = aws_iam_role.ingest_trigger.arn
   runtime          = "python3.12"

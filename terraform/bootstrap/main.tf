@@ -48,6 +48,10 @@ locals {
 }
 
 resource "aws_s3_bucket" "state" {
+  #checkov:skip=CKV_AWS_145:Encrypted with SSE-S3; a customer-managed KMS key adds cost and key policies with no extra benefit here (decision 12)
+  #checkov:skip=CKV_AWS_144:Single region by design (decision 7); no disaster-recovery requirement
+  #checkov:skip=CKV_AWS_18:No separate access-log bucket for this lab; API activity is in CloudTrail
+  #checkov:skip=CKV2_AWS_62:Nothing needs to react to objects in this bucket
   bucket = local.state_bucket
 
   # Refuse to delete this bucket, even with `terraform destroy`: losing it means
@@ -74,6 +78,16 @@ resource "aws_s3_bucket_lifecycle_configuration" "state" {
     filter {}
     noncurrent_version_expiration {
       noncurrent_days = 90
+    }
+  }
+
+  # Uploads that were started but never finished still cost storage; clean them up.
+  rule {
+    id     = "abort-incomplete-uploads"
+    status = "Enabled"
+    filter {}
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
     }
   }
 }

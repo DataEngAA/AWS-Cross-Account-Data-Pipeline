@@ -10,6 +10,7 @@ resource "aws_db_subnet_group" "platform" {
 resource "aws_db_instance" "platform" {
   count = var.enable_rds ? 1 : 0
 
+  #checkov:skip=CKV2_AWS_30:Lab database used for short sessions; query logging adds cost and noise
   identifier        = "platform-db"
   engine            = "postgres" # no engine_version: AWS picks its current default
   instance_class    = "db.t4g.micro"
@@ -35,6 +36,7 @@ resource "aws_db_instance" "platform" {
   delete_automated_backups = true
   deletion_protection      = false
   apply_immediately        = true
+  copy_tags_to_snapshot    = true
 }
 
 # The Glue role may read this one secret only.
@@ -59,15 +61,16 @@ resource "aws_iam_role_policy" "glue_rds_secret" {
 resource "aws_glue_job" "load_rds" {
   count = var.enable_rds ? 1 : 0
 
-  name              = "platform-load-rds"
-  role_arn          = aws_iam_role.glue.arn
-  glue_version      = "5.0"
-  worker_type       = "G.1X"
-  number_of_workers = 2
-  execution_class   = "FLEX"
-  timeout           = 10
-  max_retries       = 0
-  connections       = [aws_glue_connection.vpc.name] # run inside the VPC
+  name                   = "platform-load-rds"
+  role_arn               = aws_iam_role.glue.arn
+  glue_version           = "5.0"
+  worker_type            = "G.1X"
+  number_of_workers      = 2
+  execution_class        = "FLEX"
+  timeout                = 10
+  max_retries            = 0
+  connections            = [aws_glue_connection.vpc.name] # run inside the VPC
+  security_configuration = aws_glue_security_configuration.platform.name
 
   command {
     name            = "glueetl"

@@ -94,16 +94,36 @@ resource "aws_iam_role_policy" "glue" {
   policy = data.aws_iam_policy_document.glue.json
 }
 
+# --- Security configuration ---------------------------------------------------------------
+# Makes Glue itself request SSE-S3 for everything it writes, independent of bucket defaults.
+resource "aws_glue_security_configuration" "platform" {
+  #checkov:skip=CKV_AWS_99:S3 output uses SSE-S3; CloudWatch and bookmark encryption would need a customer-managed KMS key (decision 12), and bookmarks are off
+  name = "platform-glue-security"
+
+  encryption_configuration {
+    s3_encryption {
+      s3_encryption_mode = "SSE-S3"
+    }
+    cloudwatch_encryption {
+      cloudwatch_encryption_mode = "DISABLED"
+    }
+    job_bookmarks_encryption {
+      job_bookmarks_encryption_mode = "DISABLED"
+    }
+  }
+}
+
 # --- ETL + data quality job ----------------------------------------------------------------
 resource "aws_glue_job" "etl_products" {
-  name              = "platform-etl-products"
-  role_arn          = aws_iam_role.glue.arn
-  glue_version      = "5.0"
-  worker_type       = "G.1X"
-  number_of_workers = 2
-  execution_class   = "FLEX"
-  timeout           = 10 # minutes
-  max_retries       = 0
+  name                   = "platform-etl-products"
+  role_arn               = aws_iam_role.glue.arn
+  glue_version           = "5.0"
+  worker_type            = "G.1X"
+  number_of_workers      = 2
+  execution_class        = "FLEX"
+  timeout                = 10 # minutes
+  security_configuration = aws_glue_security_configuration.platform.name
+  max_retries            = 0
 
   command {
     name            = "glueetl"

@@ -1,6 +1,7 @@
 # Alerts: the SNS topic the workflow publishes failures to, and an alarm on the DLQ.
 
 resource "aws_sns_topic" "alerts" {
+  #checkov:skip=CKV_AWS_26:With the AWS-managed SNS key, CloudWatch alarms cannot publish to the topic; alerts hold no sensitive data
   name = "platform-alerts"
 }
 

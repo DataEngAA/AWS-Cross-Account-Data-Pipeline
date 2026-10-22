@@ -5,6 +5,7 @@
 # Glue network connection. Only with enable_rds (paid per hour): the interface endpoints.
 
 resource "aws_vpc" "platform" {
+  #checkov:skip=CKV2_AWS_11:VPC flow logs to S3 are a planned follow-up (OBSERVABILITY.md)
   cidr_block           = "10.20.0.0/16" # Account A is planned as 10.10.0.0/16, so peering never overlaps
   enable_dns_hostnames = true           # needed for private DNS on interface endpoints and RDS
   enable_dns_support   = true
@@ -51,12 +52,20 @@ resource "aws_vpc_endpoint" "s3" {
   tags              = { Name = "platform-vpce-s3" }
 }
 
+# The VPC's built-in default security group: taken over with no rules, so nothing that
+# accidentally lands in it can send or receive traffic.
+resource "aws_default_security_group" "platform" {
+  vpc_id = aws_vpc.platform.id
+  tags   = { Name = "platform-default-sg-locked" }
+}
+
 # --- Security groups ---------------------------------------------------------------------
 # Rules are separate resources and reference groups, not IP ranges, so they stay correct
 # however Glue's addresses change. Terraform removes AWS's default "allow all outbound"
 # rule, so only the rules below exist.
 
 resource "aws_security_group" "glue" {
+  #checkov:skip=CKV2_AWS_5:Attached through the Glue network connection, which checkov does not recognise
   name        = "platform-glue-sg"
   description = "Glue jobs in the platform VPC"
   vpc_id      = aws_vpc.platform.id
@@ -65,6 +74,9 @@ resource "aws_security_group" "glue" {
 
 # Required by Glue: its workers talk to each other.
 resource "aws_vpc_security_group_ingress_rule" "glue_self" {
+  #checkov:skip=CKV_AWS_24:Source is this security group itself, not 0.0.0.0/0 (required by Glue)
+  #checkov:skip=CKV_AWS_25:Source is this security group itself, not 0.0.0.0/0 (required by Glue)
+  #checkov:skip=CKV_AWS_260:Source is this security group itself, not 0.0.0.0/0 (required by Glue)
   security_group_id            = aws_security_group.glue.id
   referenced_security_group_id = aws_security_group.glue.id
   ip_protocol                  = "tcp"

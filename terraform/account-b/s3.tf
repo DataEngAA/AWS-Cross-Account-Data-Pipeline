@@ -2,6 +2,11 @@
 # athena-results/) plus the Glue scripts under scripts/.
 
 resource "aws_s3_bucket" "curated" {
+  #checkov:skip=CKV_AWS_145:Encrypted with SSE-S3; a customer-managed KMS key adds cost and key policies with no extra benefit here (decision 12)
+  #checkov:skip=CKV_AWS_144:Single region by design (decision 7); no disaster-recovery requirement
+  #checkov:skip=CKV_AWS_18:No separate access-log bucket for this lab; API activity is in CloudTrail
+  #checkov:skip=CKV2_AWS_62:Nothing needs to react to objects in this bucket
+  #checkov:skip=CKV_AWS_21:Curated data is derived and rebuilt from raw, so versioning stays off (decision 13)
   bucket           = local.curated_bucket
   bucket_namespace = "account-regional" # same kind as the console-built bucket
 

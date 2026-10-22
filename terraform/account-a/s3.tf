@@ -2,6 +2,9 @@
 # event notification that tells Account B about each new file.
 
 resource "aws_s3_bucket" "raw" {
+  #checkov:skip=CKV_AWS_145:Encrypted with SSE-S3; a customer-managed KMS key adds cost and key policies with no extra benefit here (decision 12)
+  #checkov:skip=CKV_AWS_144:Single region by design (decision 7); no disaster-recovery requirement
+  #checkov:skip=CKV_AWS_18:No separate access-log bucket for this lab; API activity is in CloudTrail
   bucket           = local.raw_bucket
   bucket_namespace = "account-regional"
 
