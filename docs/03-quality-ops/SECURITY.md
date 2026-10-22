@@ -46,8 +46,11 @@ Known gaps to close: console-added `AWSLambdaBasicExecutionRole`, long-lived acc
 - `.gitignore` excludes `*.tfstate`, `*.tfvars`, `.env`, and any credentials files.
 - Terraform state in an encrypted S3 backend (a small bootstrap step) or local state kept out of Git during early work.
 
-## Checks before publishing the repo
-- [ ] Secret scan on the repo (for example gitleaks).
-- [ ] IAM Access Analyzer shows no unintended external access.
-- [ ] No resource with `0.0.0.0/0` ingress other than intentionally documented ones.
-- [ ] Account IDs in screenshots and docs are masked.
+## Checks before publishing the repo (done 2026-10-23, Chunk 7c)
+- [x] Secret scan: trivy `fs --scanners secret` on the repo, canary-tested with a fake key (the AWS documentation example key is allow-listed by trivy, so the canary used a random one). 0 findings; no AWS key pattern anywhere in Git history.
+- [x] IaC scan: checkov on all Terraform: 263 passed; 6 fixed (DynamoDB PITR, Glue security configuration, locked default security group, Step Functions error logging, state-bucket upload cleanup, RDS tag copy); 29 accepted with `#checkov:skip` reasons in the resource (customer-managed KMS, cross-region replication, access logging, curated versioning, log retention, SNS encryption, and false positives on the Glue self-referencing rule and the SQS-triggered Lambda).
+- [x] IAM Access Analyzer (ACCOUNT type) in both accounts. A: raw bucket (B's Glue role) and producer-state-writer (account B) are intended and archived by Terraform archive rules matching exact resource and principal; a GitHub Actions OIDC role from another personal project is left to that project. B: no findings (S3 service access to the queue is not external access).
+- [x] No resource allows `0.0.0.0/0` ingress; the VPC has no internet gateway or NAT, and its default security group has no rules.
+- [x] Account IDs replaced by placeholders in all committed files and history; commit author uses the GitHub no-reply address.
+
+Follow-ups: X-Ray tracing, VPC flow logs, CI running these scans on every push.

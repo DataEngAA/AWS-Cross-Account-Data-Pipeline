@@ -69,7 +69,8 @@ Legend: `[ ]` to do, `[x]` done. Update as you go.
 - [x] 7c: checkov review: 6 fixes applied, 29 findings documented as skips with reasons; e2e still passes
 - [x] 7c: IAM Access Analyzer in both accounts; A: 2 intended findings archived by Terraform archive rules (1 finding from another project left active), B: 0 findings
 - [x] 7c: retire `policies/`, `src/**/iam-policy.json`, `src/stepfunctions/trust-policy.json`, `scripts/render.py`, `scripts/teardown_console_build.py`, `tests/manual/`
-- [ ] 7c: README with diagram and cost note; make the repo public
+- [x] 7c: README rewritten: Mermaid architecture diagram, flow, cross-account table, proof, cost note, deploy steps (AC-09)
+- [ ] 7c: make the repo public
 
 ## Later: scale test
 - [ ] Add a `--preset large` to the generator: ~22M records, JSON Lines, ~100 files of ~45 MB, 30 days, optional `--gzip` (~4.5-5 GB plain)
