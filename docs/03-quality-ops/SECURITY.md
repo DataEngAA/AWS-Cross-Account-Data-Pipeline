@@ -25,9 +25,9 @@ Always grant the narrowest principal: a specific role ARN, not the whole account
 ### As built (2026-10-20)
 | Trust | Exact grant | File |
 |---|---|---|
-| Raw bucket (A) -> Glue role (B) | `role/platform-glue-etl-role` may `s3:ListBucket` with `s3:prefix` `raw` or `raw/*`, and `s3:GetObject` on `raw/*`. B's role policy grants the same on its side. | `policies/account-a/raw-bucket-policy.json`, `src/glue/iam-policy.json` |
-| Queue (B) <- bucket (A) | `s3.amazonaws.com` may `sqs:SendMessage`, with conditions `aws:SourceArn` = raw bucket and `aws:SourceAccount` = A (protects against the confused deputy problem) | `policies/account-b/sqs-ingest-queue-policy.json` |
-| B -> DynamoDB (A) | Role `producer-state-writer` in A. Principal is account B **with** an `aws:PrincipalArn` condition listing `role/platform-workflow-role` and, temporarily, `user/<ADMIN_USER_B>`. A role named directly as a principal must already exist; a condition does not need to. Permissions: `dynamodb:GetItem` and `dynamodb:UpdateItem` on `scrape_state` only. Verified: `Scan`, `DeleteItem` and `s3:ListBucket` are denied. | `policies/account-a/state-writer-*.json` |
+| Raw bucket (A) -> Glue role (B) | `role/platform-glue-etl-role` may `s3:ListBucket` with `s3:prefix` `raw` or `raw/*`, and `s3:GetObject` on `raw/*`. B's role policy grants the same on its side. | `terraform/account-a/s3.tf`, `terraform/account-b/glue.tf` |
+| Queue (B) <- bucket (A) | `s3.amazonaws.com` may `sqs:SendMessage`, with conditions `aws:SourceArn` = raw bucket and `aws:SourceAccount` = A (protects against the confused deputy problem) | `terraform/account-b/sqs.tf` |
+| B -> DynamoDB (A) | Role `producer-state-writer` in A. Principal is account B **with** an `aws:PrincipalArn` condition listing `role/platform-workflow-role` and, temporarily, `user/<ADMIN_USER_B>`. A role named directly as a principal must already exist; a condition does not need to. Permissions: `dynamodb:GetItem` and `dynamodb:UpdateItem` on `scrape_state` only. Verified: `Scan`, `DeleteItem` and `s3:ListBucket` are denied. | `terraform/account-a/iam.tf` |
 
 Service roles in B: the Lambda role reads only `platform-ingest-queue` and writes only its own log group; the Glue role reads `raw/` in A and `samples/` in B and writes only `curated/` in B, plus the `curated_$folder$` marker object (see `OBSERVABILITY.md`).
 

@@ -55,25 +55,20 @@ Add the exported HLD and flowchart images to `docs/02-architecture/diagrams/` an
 
 ## Repo layout
 ```
-src/generator/               generate.py (synthetic data), upload.py (S3 + DynamoDB)
-src/lambda/ingest_trigger/   handler.py, iam-policy.json, test_event.json
-src/glue/                    etl_products.py (ETL + data quality), load_rds.py (RDS load), iam-policy.json
-src/stepfunctions/           ingest_workflow.asl.json, workflow role trust and permissions
-policies/account-a/          raw bucket policy, producer-state-writer trust and permissions
-policies/account-b/          SQS queue policy
-tests/manual/                inputs for manual cross-account tests
-scripts/render.py            fills placeholders from local/accounts.env into build/
-local/accounts.env.example   template for the real IDs (local/accounts.env is not committed)
-docs/                        this documentation
-terraform/                   (Chunk 7) account-a/ account-b/ modules/
+terraform/bootstrap/          state bucket for the other two roots (applied once, local state)
+terraform/account-b/          platform: S3, SQS, Lambda, Glue, catalog, Athena, Step Functions, alerts, VPC, RDS switch
+terraform/account-a/          producer: raw bucket + policy + event, scrape_state, producer-state-writer, Access Analyzer
+src/generator/                generate.py (synthetic data), upload.py (S3 + DynamoDB)
+src/lambda/ingest_trigger/    handler.py (starts the workflow), test_event.json
+src/glue/                     etl_products.py (ETL + Glue Data Quality), load_rds.py (RDS load)
+src/stepfunctions/            ingest_workflow.asl.json (read by Terraform)
+tests/e2e/run_e2e.py          end-to-end test: upload in A -> PROCESSED, workflow SUCCEEDED, Athena count matches
+docs/                         requirements, architecture, ADRs, decisions, tests, security, interview notes
+local/accounts.env.example    template for local/accounts.env (real IDs, not committed)
 ```
 
-## Account IDs and placeholders
-Files in this repo use placeholders such as `<ACCOUNT_A_ID>`, `<ACCOUNT_B_ID>`, `<ADMIN_USER_A>` instead of real values, so no account details are published. To use them:
-
-1. Copy `local/accounts.env.example` to `local/accounts.env` and fill in your values (this file is ignored by Git).
-2. Run `python scripts/render.py`; ready-to-paste copies of every policy and the workflow definition are written to `build/` (also ignored).
-3. `src/generator/upload.py` reads the raw bucket name from `local/accounts.env` (or `--bucket` / `$RAW_BUCKET`).
+## Account IDs
+No account ID is committed. Terraform reads its own account from AWS and takes the other account's ID from `terraform.tfvars` (not committed; see `terraform.tfvars.example`). The state bucket name is in `backend.hcl` (not committed; see `backend.hcl.example`). Local scripts read `local/accounts.env` (copy `local/accounts.env.example`). Docs show `<ACCOUNT_A_ID>` / `<ACCOUNT_B_ID>`.
 
 ## Deploy with Terraform
 Prerequisites: Terraform 1.10+, AWS CLI profiles `default` (Account A) and `acct-b` (Account B).

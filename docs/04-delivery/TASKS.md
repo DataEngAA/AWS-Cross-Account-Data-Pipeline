@@ -65,7 +65,11 @@ Legend: `[ ]` to do, `[x]` done. Update as you go.
 - [x] 7b: import the DynamoDB table as an exercise (only change on import: tags; block removed afterwards)
 - [x] 7b: e2e script `tests/e2e/run_e2e.py`, then destroy and apply both (AC-08 passed 2026-10-22: 292/292 after a full rebuild)
 - [ ] 7c: secret scan (gitleaks), IaC scan (checkov), IAM Access Analyzer
-- [ ] 7c: retire `policies/` and `scripts/render.py`; README with diagrams and cost note; make the repo public
+- [x] 7c: secret scan with trivy (canary-tested, 0 findings in files and Git history)
+- [x] 7c: checkov review: 6 fixes applied, 29 findings documented as skips with reasons; e2e still passes
+- [x] 7c: IAM Access Analyzer in both accounts; A: 2 intended findings archived by Terraform archive rules (1 finding from another project left active), B: 0 findings
+- [x] 7c: retire `policies/`, `src/**/iam-policy.json`, `src/stepfunctions/trust-policy.json`, `scripts/render.py`, `scripts/teardown_console_build.py`, `tests/manual/`
+- [ ] 7c: README with diagram and cost note; make the repo public
 
 ## Later: scale test
 - [ ] Add a `--preset large` to the generator: ~22M records, JSON Lines, ~100 files of ~45 MB, 30 days, optional `--gzip` (~4.5-5 GB plain)

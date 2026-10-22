@@ -37,7 +37,7 @@ CIDR blocks do not overlap so the VPCs can be peered.
 
 Rule of thumb: for resource policies and roles, permission must be granted on **both** sides (the caller's identity policy and the target's resource or trust policy).
 
-Status (2026-10-20): the first three rows are built and tested. The policies are in `policies/account-a/` and `policies/account-b/`; resource names and settings are in [RESOURCE_INVENTORY.md](RESOURCE_INVENTORY.md). The DynamoDB role is `producer-state-writer`; its trust policy trusts account B limited by `aws:PrincipalArn`, because the caller (`platform-workflow-role`) is only created in Chunk 6.
+Status (2026-10-20): the first three rows are built and tested. The policies are defined in Terraform (`terraform/account-a/s3.tf`, `iam.tf`; `terraform/account-b/sqs.tf`, `glue.tf`, `stepfunctions.tf`); resource names and settings are in [RESOURCE_INVENTORY.md](RESOURCE_INVENTORY.md). The DynamoDB role is `producer-state-writer`; its trust policy trusts account B limited by `aws:PrincipalArn`, because the caller (`platform-workflow-role`) is only created in Chunk 6.
 
 ## Network design
 

@@ -24,7 +24,7 @@ __pycache__/
 # Generated test data
 data/
 
-# Real account IDs and user names (placeholders are filled by scripts/render.py)
+# Real account IDs for local scripts (src/generator/upload.py)
 local/accounts.env
 build/
 
