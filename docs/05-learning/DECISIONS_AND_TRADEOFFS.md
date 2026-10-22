@@ -36,6 +36,11 @@ Short log. Promote big ones to an ADR in `docs/adr/`.
 | 30 | Concurrency limits: SQS trigger max 2 Lambdas, Glue ETL max 3 runs, workflow retries `ConcurrentRunsExceededException` | Unlimited | Protects cost and avoids Glue concurrency errors during bursts | Large bursts queue up and take longer |
 | 31 | RDS load is not part of the automatic workflow yet | Always load RDS | RDS is deleted between sessions; the workflow must succeed without it | RDS is refreshed manually with `platform-load-rds` |
 | 32 | Failure path marks the file FAILED in A and emails via SNS; a separate alarm watches the DLQ | Only CloudWatch alarms | The producer sees each file's outcome; the DLQ alarm covers failures before the workflow starts | `error_message` in A is only the generic Step Functions error name for now |
+| 33 | Terraform: one root per account plus bootstrap, S3 state with native locking (ADR-005) | One root for both accounts | Separate blast radius and state per account, matching ADR-001 | Two applies in a fixed order (B, then A) |
+| 34 | Cut over by recreating, importing only `scrape_state` | Import all 40 resources | A real test that code alone builds everything | Synthetic data deleted and regenerated |
+| 35 | `allow_destroy_raw` guard on the raw bucket | `force_destroy = true` always | Deleting the producer's original data takes a deliberate tfvars change plus an apply | One extra step before a destroy test |
+| 36 | Step Functions definition read from the tested JSON file with placeholders replaced | Rewrite it in HCL | One tested copy of the workflow | ARNs inside it are built from names, not references |
+| 37 | Automated e2e test (`tests/e2e/run_e2e.py`) as the acceptance check | Manual console checks | Repeatable in about 5 minutes after any change or rebuild | Costs one Glue run per test |
 
 ## Open decisions
 - Keep or drop VPC peering (ADR-003)

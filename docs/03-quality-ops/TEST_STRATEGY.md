@@ -57,6 +57,9 @@
 | 2026-10-20 | Failure (F-02, AC-06) | Upload a file that is not valid JSON | 0 records read, Glue failed, A's row FAILED, email received |
 | 2026-10-20 | Alarm | Leave one message in the DLQ | `platform-dlq-not-empty` went to ALARM |
 | 2026-10-20 | Security (F-05 style) | AssumeRole with the removed test user | AccessDenied |
+| 2026-10-22 | Infrastructure | `terraform plan` for account-b (45; 52 with `enable_rds`), account-a (1 import + 10) | as expected, no account IDs in committed code |
+| 2026-10-22 | End to end | `tests/e2e/run_e2e.py` on the Terraform-built pipeline | PASS: PROCESSED, execution SUCCEEDED, Athena 292 = predicted 292 |
+| 2026-10-22 | Acceptance (AC-08) | `terraform destroy` both accounts, `terraform apply` both, rerun e2e | PASS: same three checks after a full rebuild |
 
 AC-06 note: in this design a corrupt file does not reach the DLQ, because the Lambda successfully starts the workflow; the workflow itself marks the file FAILED and sends the email. The DLQ (and its alarm) is for messages the Lambda cannot handle.
 

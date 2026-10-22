@@ -60,10 +60,10 @@ Legend: `[ ]` to do, `[x]` done. Update as you go.
 - [x] 7a: Terraform warm-up (throwaway bucket: init, plan, apply, change, drift, destroy)
 - [x] 7a: `terraform/bootstrap` applied: state bucket `tfstate-<ACCOUNT_B_ID>-ap-south-1` (versioned, encrypted, TLS-only, prevent_destroy)
 - [x] 7a: `terraform/account-b` written and planned (45 resources; 52 with `enable_rds = true`); not applied yet because the console-built resources still exist
-- [ ] 7b: `terraform/account-a` (raw bucket + policy + event, `scrape_state`, `producer-state-writer`)
-- [ ] 7b: delete console-built resources (A first, then B), apply account-b, then account-a; confirm the SNS email
-- [ ] 7b: import the DynamoDB table as an exercise
-- [ ] 7b: e2e script `tests/e2e/run_e2e.py`, then destroy and apply both (AC-08)
+- [x] 7b: `terraform/account-a` (raw bucket + policy + event, `scrape_state`, `producer-state-writer`)
+- [x] 7b: delete console-built resources (A first, then B) with `scripts/teardown_console_build.py` (36 items, dry run first), apply account-b (45), then account-a (11); confirm the SNS email
+- [x] 7b: import the DynamoDB table as an exercise (only change on import: tags; block removed afterwards)
+- [x] 7b: e2e script `tests/e2e/run_e2e.py`, then destroy and apply both (AC-08 passed 2026-10-22: 292/292 after a full rebuild)
 - [ ] 7c: secret scan (gitleaks), IaC scan (checkov), IAM Access Analyzer
 - [ ] 7c: retire `policies/` and `scripts/render.py`; README with diagrams and cost note; make the repo public
 
