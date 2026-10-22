@@ -21,13 +21,13 @@ Think of the docs as three layers: **why → how → do**. When something change
 | Decide whether something is too risky or costly | [RISKS](04-delivery/RISKS.md) | add new risks as they appear |
 | Check security or permissions | [SECURITY](03-quality-ops/SECURITY.md) | the cross-account access table in [ARCHITECTURE](02-architecture/ARCHITECTURE.md) |
 | Know how to test or debug | [TEST_STRATEGY](03-quality-ops/TEST_STRATEGY.md), [OBSERVABILITY](03-quality-ops/OBSERVABILITY.md) | add runbook notes |
-| Prepare for interviews | [INTERVIEW_NOTES](05-learning/INTERVIEW_NOTES.md) | fill in "my notes" and the chunk log after each chunk |
+| Prepare for interviews | personal interview notes (kept locally, not in the repo) | fill in "my notes" and the chunk log after each chunk |
 
 ## How to follow the docs while building
 1. Start each session at [TASKS](04-delivery/TASKS.md). Pick the next unchecked item in the current chunk.
 2. If you need context, read the matching section of [ARCHITECTURE](02-architecture/ARCHITECTURE.md) or [DATA_FLOW](02-architecture/DATA_FLOW.md).
 3. Before calling a chunk done, walk through [DEFINITION_OF_DONE](04-delivery/DEFINITION_OF_DONE.md).
-4. After each chunk, add three lines to the chunk log in [INTERVIEW_NOTES](05-learning/INTERVIEW_NOTES.md): what you built, what broke, what you learned.
+4. After each chunk, add three lines to your personal notes (kept locally, not in the repo): what you built, what broke, what you learned.
 
 ## How to change a decision
 Not every change deserves the same effort:

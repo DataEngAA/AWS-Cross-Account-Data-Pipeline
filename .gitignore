@@ -30,3 +30,6 @@ build/
 
 # Terraform backend settings (contain the account ID)
 backend.hcl
+
+# Personal interview notes: kept locally, never published
+docs/05-learning/INTERVIEW_NOTES.md

@@ -75,4 +75,4 @@ Legend: `[ ]` to do, `[x]` done. Update as you go.
 ## Later: scale test
 - [ ] Add a `--preset large` to the generator: ~22M records, JSON Lines, ~100 files of ~45 MB, 30 days, optional `--gzip` (~4.5-5 GB plain)
 - [ ] Upload to a `backfill/` prefix that is not wired to the event trigger, and process it with one manual Glue run
-- [ ] Record what broke (Glue workers, memory, file sizes, Athena scan cost) in `INTERVIEW_NOTES.md`
+- [ ] Record what broke (Glue workers, memory, file sizes, Athena scan cost) in personal notes (kept locally)

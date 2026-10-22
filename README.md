@@ -96,7 +96,7 @@ src/lambda/ingest_trigger/    handler.py (starts the workflow), test_event.json
 src/glue/                     etl_products.py (ETL + Glue Data Quality), load_rds.py (RDS load)
 src/stepfunctions/            ingest_workflow.asl.json (read by Terraform)
 tests/e2e/run_e2e.py          end-to-end test
-docs/                         requirements, architecture, ADRs, decisions, tests, security, interview notes
+docs/                         requirements, architecture, ADRs, decisions, tests, security
 local/accounts.env.example    template for local/accounts.env (real IDs, not committed)
 ```
 
@@ -121,4 +121,4 @@ Start with [How to use these docs](docs/HOW_TO_USE_THESE_DOCS.md).
 | Decisions | [ADR-001 account split](docs/adr/ADR-001-two-account-producer-platform-split.md), [ADR-002 direct cross-account read](docs/adr/ADR-002-glue-reads-producer-bucket-directly.md), [ADR-005 Terraform layout and cut-over](docs/adr/ADR-005-terraform-layout-and-cutover.md), [Decisions log](docs/05-learning/DECISIONS_AND_TRADEOFFS.md) |
 | Quality and operations | [Test strategy](docs/03-quality-ops/TEST_STRATEGY.md), [Data quality](docs/03-quality-ops/DATA_QUALITY.md), [Observability](docs/03-quality-ops/OBSERVABILITY.md), [Security](docs/03-quality-ops/SECURITY.md), [SLO](docs/03-quality-ops/SLO.md) |
 | Delivery | [Implementation plan](docs/04-delivery/IMPLEMENTATION_PLAN.md), [Tasks](docs/04-delivery/TASKS.md), [Definition of done](docs/04-delivery/DEFINITION_OF_DONE.md), [Risks](docs/04-delivery/RISKS.md) |
-| Learning | [Learning plan](docs/05-learning/LEARNING_PLAN.md), [Interview notes](docs/05-learning/INTERVIEW_NOTES.md) |
+| Learning | [Learning plan](docs/05-learning/LEARNING_PLAN.md) |

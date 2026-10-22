@@ -20,7 +20,7 @@ Chunks 0-3 complete. Account A uses the `default` CLI profile (not `acct-a` as f
 1. Finish and test one chunk before starting the next.
 2. Create paid resources (RDS, NAT, Glue runs) only for the lab session and tear them down after.
 3. Manual console work first for learning, then rewrite in Terraform in chunk 7 (or per chunk if comfortable).
-4. After each chunk, update `TASKS.md`, add notes to `INTERVIEW_NOTES.md`, and log any design choice in `DECISIONS_AND_TRADEOFFS.md`.
+4. After each chunk, update `TASKS.md`, update personal notes (kept locally), and log any design choice in `DECISIONS_AND_TRADEOFFS.md`.
 
 ## Suggested pacing
 About 1 to 2 chunks per week of focused evenings; chunks 3 and 5 are the hardest and deserve extra time.

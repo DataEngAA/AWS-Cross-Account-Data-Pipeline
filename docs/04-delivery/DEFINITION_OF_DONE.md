@@ -7,7 +7,7 @@ A chunk is done when:
 - [ ] IAM is least privilege for what was built (no `*` actions without a note)
 - [ ] Costly resources created for the lab are stopped or deleted
 - [ ] `TASKS.md` updated
-- [ ] Notes added to `INTERVIEW_NOTES.md` (what I built, what broke, what I learned)
+- [ ] Personal notes updated (what I built, what broke, what I learned; kept locally)
 
 ## Per project
 - [ ] AC-01 to AC-09 pass

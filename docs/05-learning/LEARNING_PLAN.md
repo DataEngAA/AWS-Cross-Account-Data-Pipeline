@@ -19,6 +19,6 @@ Each chunk teaches specific skills. Use the "can I explain it?" check before mov
 - Terraform documentation for the AWS provider.
 
 ## Habits
-- After each chunk, write three sentences in `INTERVIEW_NOTES.md`: what I built, what broke, what I learned.
+- After each chunk, write three sentences in personal notes (kept locally): what I built, what broke, what I learned.
 - Break something on purpose once per chunk and fix it.
 - Prefer console first to understand, then code it in Terraform.
