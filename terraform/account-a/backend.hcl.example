@@ -1,0 +1,4 @@
+# Copy to backend.hcl (ignored by Git), fill in, then: terraform init "-backend-config=backend.hcl"
+# The state bucket is in Account B, so the backend uses Account B's profile.
+bucket  = "tfstate-<ACCOUNT_B_ID>-ap-south-1"
+profile = "acct-b"
